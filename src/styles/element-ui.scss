@@ -1,0 +1,50 @@
+ //to reset element-ui default css
+.el-upload {
+  input[type="file"] {
+    display: none !important;
+  }
+}
+
+.el-upload__input {
+  display: none;
+}
+
+//暂时性解决diolag 问题 https://github.com/ElemeFE/element/issues/2461
+.el-dialog {
+  transform: none;
+  left: 0;
+  position: relative;
+  margin: 0 auto;
+}
+.dialog-table .el-dialog__body{
+  padding: 10px 20px;
+}
+
+//element ui upload
+.upload-container {
+  .el-upload {
+    width: 100%;
+    .el-upload-dragger {
+      width: 100%;
+      height: 200px;
+    }
+  }
+}
+//表格高度
+ .el-table th{
+   padding: 8px 0;
+ }
+ .el-table thead th{
+   background-color: #F2F6FC;
+ }
+ .el-table__body tbody .el-table__row td{
+   padding: 5px 0;
+ }
+ // 文本域
+ .el-textarea textarea{
+   min-height: 100px !important;
+ }
+ // messagebox
+ .el-message-box__content{
+   padding: 10px 10px;
+ }
