@@ -72,6 +72,11 @@ const routerList = {
     path: 'locationService',
     component: _import('position/locationService/index')
   },
+  // 位置服务--轨迹回放
+  'replaying': {
+    path: 'replaying',
+    component: _import('position/replaying/index')
+  },
   2: {
     path: '/system/basicData',
     component: _import('commonRouterView/index')

@@ -16,6 +16,13 @@ export async function loginApi(dataInfo) {
     data: inputView(dataInfo)
   })
 }
+// 退出登录
+export async function loginOut() {
+  return request({
+    url: zcApi + '/home/logout',
+    method: 'post'
+  })
+}
 // 获取所有菜单
 export async function getAllMenuList() {
   return request({
@@ -274,6 +281,14 @@ export async function GetLocationInfo(dataInfo) {
 export async function GetCarInfoTree(dataInfo) {
   return request({
     url: zcApi + '/ebox/car/carInfo/GetCarInfo',
+    method: 'post',
+    data: inputView(dataInfo)
+  })
+}
+// 车辆轨迹回放
+export async function GetLocationMap(dataInfo) {
+  return request({
+    url: zcApi + '/ebox/car/carInfo/GetLocationMap',
     method: 'post',
     data: inputView(dataInfo)
   })

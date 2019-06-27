@@ -41,11 +41,58 @@
         </div>
       </div>
     </div>
+    <!-- 路径地图 -->
+    <el-dialog
+      ref="roadRef"
+      :title="dialogInfo.title"
+      custom-class="dialog-wrap" 
+      :visible.sync="dialogInfo.roadFlag" 
+      width="90%" 
+      top="2vh" 
+      :close-on-click-modal="dialogInfo.default" 
+      :close-on-press-escape="dialogInfo.default"
+      >
+      <div class="dialog-content">
+        <div class="dialog-search">
+          <div class="zc-table-search">
+            <div class="search-quest">
+              <span class="search-quest-title">时间段：</span>
+              <el-date-picker
+                v-model="carRoadTime"
+                type="datetimerange"
+                :picker-options="pickerOptions"
+                align="right"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                :default-time="['00:00:00', '23:59:59']">
+              </el-date-picker>
+            </div>
+            <div class="search-quest">
+              <el-button type="primary" @click.native="searchRoad">绘制路径</el-button>
+            </div>
+            <div class="search-quest road-event-btn">
+              <el-tooltip content="播放" placement="bottom">
+                <el-button type="success" icon="el-icon-video-play" circle @click.native="playRoad"></el-button>
+              </el-tooltip>
+              <el-tooltip content="暂停" placement="bottom">
+                <el-button type="warning" icon="el-icon-video-pause" circle @click.native="pauseRoad"></el-button>
+              </el-tooltip>
+              <el-tooltip content="重置" placement="bottom">
+                <el-button icon="el-icon-refresh" circle @click.native="resetRoad"></el-button>
+              </el-tooltip>
+            </div>
+          </div>
+        </div>
+        <div class="dialog-cont">
+          <div id="roadMapDiv" :style="{'height': dialogMapHeight}"></div>
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
-  import { MapabcEncryptToBdmap } from '@/filters/index'
-  import { GetLocationInfo, GetCarInfoTree } from '@/api/requestConfig'
+  import { MapabcEncryptToBdmap, formatTime } from '@/filters/index'
+  import { GetLocationInfo, GetCarInfoTree, GetLocationMap } from '@/api/requestConfig'
   import BMap from 'BMap'
   import BMapLib from '@/utils/MakerClusterer'
   import BMAPNORMALMAP from 'BMAP_NORMAL_MAP'
@@ -56,12 +103,62 @@
     mounted() {
       // 设置树形最大高度
       this.maxHeight = document.getElementById('truckTree').offsetHeight + 'px'
+      this.dialogMapHeight = document.getElementById('carMap').offsetHeight + 'px'
       // 创建地图
       this.renderMap()
       // 获取所有车辆数
       this.getCarList()
     },
     data() {
+      const pickerOptions = {
+        shortcuts: [{
+          text: '今天',
+          onClick(picker) {
+            const end = new Date()
+            const endTime = formatTime(end.getTime()) + ' 23:59:59'
+            const startTime = formatTime(end.getTime()) + ' 00:00:00'
+            picker.$emit('pick', [new Date(startTime), new Date(endTime)])
+          }
+        }, {
+          text: '昨天',
+          onClick(picker) {
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 1)
+            const endTime = formatTime(start.getTime()) + ' 23:59:59'
+            const startTime = formatTime(start.getTime()) + ' 00:00:00'
+            picker.$emit('pick', [new Date(startTime), new Date(endTime)])
+          }
+        }, {
+          text: '前天',
+          onClick(picker) {
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 2)
+            const endTime = formatTime(start.getTime()) + ' 23:59:59'
+            const startTime = formatTime(start.getTime()) + ' 00:00:00'
+            picker.$emit('pick', [new Date(startTime), new Date(endTime)])
+          }
+        }, {
+          text: '最近三天',
+          onClick(picker) {
+            const end = new Date()
+            const endTime = formatTime(end.getTime()) + ' 23:59:59'
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 3)
+            const startTime = formatTime(start.getTime()) + ' 00:00:00'
+            picker.$emit('pick', [new Date(startTime), new Date(endTime)])
+          }
+        }, {
+          text: '最近一周',
+          onClick(picker) {
+            const end = new Date()
+            const endTime = formatTime(end.getTime()) + ' 23:59:59'
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+            const startTime = formatTime(start.getTime()) + ' 00:00:00'
+            picker.$emit('pick', [new Date(startTime), new Date(endTime)])
+          }
+        }]
+      }
       return {
         maxHeight: '', // 最大高度
         mapLoading: true,
@@ -79,10 +176,25 @@
           children: 'Child',
           label: 'Name'
         },
-        carMap: null, // 地图实例
+        carMap: null, // 车辆地图实例
         checkedCarList: [], // 选中车辆列表
         markerClusterer: null, // 聚合
-        carPointList: [] // 点聚合
+        carPointList: [], // 点聚合
+        dialogMapHeight: '', // 弹窗地图高度
+        dialogInfo: {
+          title: '车牌号',
+          roadFlag: false, // 弹窗是否显示
+          default: false
+        },
+        carRoadNum: '', // 车牌
+        carRoadTime: [], // 选择的时间段
+        roadData: [], // 路径数据
+        roadMarkerData: [], // 路径点集合数据
+        pickerOptions: pickerOptions,
+        speed: 10000, // 速度
+        roadLuShu: null, // 路书
+        carMarker: null, // 汽车标记
+        roadMap: null // 路径地图
       }
     },
     watch: {
@@ -138,11 +250,15 @@
       // 初始化地图
       renderMap() {
         this.carMap = new BMap.Map('carMap', { minZoom: 5 }) // 创建地图实例
+        console.log(this.carMap)
         this.carMap.centerAndZoom('西安', 6) // 初始化地图，设置中心点坐标和地图级别
         this.carMap.enableScrollWheelZoom(true) // 开启鼠标滚轮缩放
         // 地图控件
         var mapType = new BMap.MapTypeControl({ mapTypes: [BMAPNORMALMAP, BMAPHYBRIDMAP] })
         this.carMap.addControl(mapType)
+        this.carMap.addControl(new BMap.NavigationControl())
+        this.carMap.addControl(new BMap.ScaleControl())
+        this.carMap.addControl(new BMap.OverviewMapControl({ isOpen: true }))
       },
       // 展开与隐藏tree
       showTree() {
@@ -248,21 +364,126 @@
           var infoWindow = new BMap.InfoWindow(needStr) // 创建信息窗口对象
           self.carMap.openInfoWindow(infoWindow, point) // 开启信息窗口
           setTimeout(() => {
-            self.testClick(json.Id) // 路径的点击事件
+            self.viewRoad(json) // 路径的点击事件
           }, 0)
         })
       },
-      testClick(id) {
-        var ele = document.getElementById(id + '')
+      // 查看路径
+      viewRoad(carData) {
+        var self = this
+        var ele = document.getElementById(carData.Id + '')
         ele.addEventListener('click', function(e) {
-          alert(id)
+          self.roadPopInfo(carData)
         })
+      },
+      // 路径弹窗基本信息设置
+      roadPopInfo(carData) {
+        this.dialogInfo.title = carData.LicenseNum // 车牌
+        // 默认时间段为今天
+        var today = formatTime(new Date().getTime())
+        this.carRoadTime = [new Date(today + ' 00:00:00'), new Date(today + ' 23:59:59')]
+        this.carRoadNum = carData.LicenseNum // 车牌号
+        this.showRoadFlag() // 弹窗显示
+      },
+      // 路径地图弹窗显示隐藏
+      showRoadFlag() {
+        this.dialogInfo.roadFlag = !this.dialogInfo.roadFlag
+        // 加载路径地图(dialog未加载，需要nextTick触发)
+        this.$nextTick(() => {
+          this.renderRoadMap()
+        })
+      },
+      // 初始化路径地图
+      renderRoadMap() {
+        this.roadMap = new BMap.Map('roadMapDiv', { minZoom: 5 }) // 创建地图实例
+        this.roadMap.centerAndZoom('西安', 6) // 初始化地图，设置中心点坐标和地图级别
+        this.roadMap.enableScrollWheelZoom(true) // 开启鼠标滚轮缩放
+        // 地图控件
+        var mapType = new BMap.MapTypeControl({ mapTypes: [BMAPNORMALMAP, BMAPHYBRIDMAP] })
+        this.roadMap.addControl(mapType)
+        this.roadMap.addControl(new BMap.NavigationControl())
+        this.roadMap.addControl(new BMap.ScaleControl())
+        // this.roadMap.addControl(new BMap.OverviewMapControl({ isOpen: true }))
+        // 加载完地图获取数据
+        this.searchRoad() // 获取路径数据
+      },
+      // 获取路径数据
+      searchRoad() {
+        if (!this.carRoadTime || this.carRoadTime.length < 1) {
+          this.$message.error('请选择查询时间段')
+          return
+        }
+        var needData = {}
+        needData.LicenseNumStr = this.carRoadNum
+        needData.StartTime = formatTime(this.carRoadTime[0].getTime(), 2)
+        needData.EndTime = formatTime(this.carRoadTime[1].getTime(), 2)
+        GetLocationMap(needData).then(res => {
+          var resData = res.data
+          if (resData && resData.length > 0) {
+            if (this.roadLuShu) {
+              this.roadLuShu.stop() // 清楚路书
+            }
+            this.roadMap.clearOverlays() // 清楚所有覆盖物
+            this.roadData = resData[0].Info
+            var pointList = []
+            this.roadData.map(x => {
+              var turnPoint = MapabcEncryptToBdmap(x.lon, x.lat)
+              var point = new BMap.Point(turnPoint.lon, turnPoint.lat)
+              pointList.push(point)
+            })
+            this.roadMarkerData = pointList
+            this.roadMap.centerAndZoom(this.roadMarkerData[0], 10) // 设置地图中心为起点
+            this.drawRoad() // 绘制路径
+          }
+        })
+      },
+      // 绘制路径
+      drawRoad() {
+        var self = this
+        self.roadMap.addOverlay(new BMap.Polyline(self.roadMarkerData, { strokeColor: 'green', strokeWeight: 5, strokeOpacity: 1 })) // 画路径
+        self.roadMap.setViewport(self.roadMarkerData) // 最佳视野
+        self.carMarker = new BMap.Marker(self.roadMarkerData[0], { icon: new BMap.Icon('http://developer.baidu.com/map/jsdemo/img/car.png', new BMap.Size(52, 26), { anchor: new BMap.Size(27, 13) }) })
+        // 小车信息
+        var label = new BMap.Label(self.carRoadNum, { offset: new BMap.Size(0, -30) })
+        label.setStyle({ border: '1px solid rgb(204, 204, 204)', color: 'rgb(0, 0, 0)', borderRadius: '5px', padding: '5px', background: 'rgb(255, 255, 255)' })
+        self.carMarker.setLabel(label) // 车标样式
+        self.roadMap.addOverlay(self.carMarker) // 把车标记加入地图
+        self.LuShuStart() // 开启路书
+      },
+      // 路书
+      LuShuStart() {
+        var self = this
+        self.roadLuShu = new BMapLib.LuShu(self.roadMap, self.roadMarkerData, {
+          defaultContent: self.carRoadNum,
+          autoView: true, // 是否开启自动视野调整，如果开启那么路书在运动过程中会根据视野自动调整
+          icon: new BMap.Icon('http://developer.baidu.com/map/jsdemo/img/car.png', new BMap.Size(52, 26), { anchor: new BMap.Size(27, 13) }),
+          speed: self.speed,
+          enableRotation: true, // 是否设置marker随着道路的走向进行旋转
+          landmarkPois: [
+            { lng: 116.306954, lat: 40.05718, html: '加油站', pauseTime: 2 }
+          ]
+        })
+      },
+      // 开始播放
+      playRoad() {
+        this.carMarker.enableMassClear() // 设置后可以隐藏改点的覆盖物
+        this.carMarker.hide()
+        this.roadLuShu.start()
+      },
+      // 暂停播放
+      pauseRoad() {
+        this.roadLuShu.pause()
+      },
+      // 重置
+      resetRoad() {
+        this.searchRoad()
       }
     }
   }
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
+  @import "src/styles/zc-table-common.scss";
   .mainWrap{
     width: 100%;
     flex-grow: 1;
@@ -282,8 +503,8 @@
     z-index: 99;
     overflow: hidden;
     position: absolute;
-    top: 30px;
-    left: 30px;
+    top: 20px;
+    left: 80px;
     background: #fff;
     box-sizing: border-box;
     padding: 10px;
@@ -344,6 +565,17 @@
       cursor: pointer;
       font-size: 26px;
       color: #409EFF;
+    }
+  }
+  .dialog-content{
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .dialog-cont{
+    width: 100%;
+    box-sizing: border-box;
+    #roadMapDiv{
+      width: 100%;
     }
   }
 </style>

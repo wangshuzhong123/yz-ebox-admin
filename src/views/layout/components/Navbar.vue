@@ -54,10 +54,11 @@
 <script>
 import { mapGetters } from 'vuex'
 import md5 from 'md5'
-import { updatePassword } from '@/api/requestConfig'
+import { updatePassword, loginOut } from '@/api/requestConfig'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 import loginOutImg from '@/assets/img/zc.png'
+import { setTimeout } from 'timers'
 
 export default {
   components: {
@@ -87,12 +88,14 @@ export default {
     },
     // 退出登录
     logout() {
-      this.$store.dispatch('LogOut').then(() => {
-        this.$store.dispatch('FedLogOut').then(() => {
-          location.reload() // 为了重新实例化vue-router对象 避免bug
-        })
-      }).catch(error => {
-        this.$message.error(error)
+      loginOut().then(res => {
+        if (res.status === 'success') {
+          this.$message.success('退出登录成功！')
+          window.sessionStorage.clear()
+          setTimeout(function() {
+            window.location.reload()
+          }, 2000)
+        }
       })
     },
     // 修改密码弹窗显示与隐藏

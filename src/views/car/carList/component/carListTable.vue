@@ -25,9 +25,9 @@
         <el-button type="primary" @click.native="searchTable">搜索</el-button>
       </div>
     </div>
-    <div class="zc-table-event-btn">
+    <!-- <div class="zc-table-event-btn">
       <el-button type="primary" @click.native="eventTab('新增车辆', 'second')">新增车辆</el-button>
-    </div>
+    </div> -->
     <div class="zc-table-body">
       <el-table
         ref="carTable"
@@ -74,17 +74,13 @@
           label="最新更新时间">
         </el-table-column>
         <el-table-column
-          prop="IsAlarm"
-          label="是否报警">
-           <template slot-scope="scope">
-            <span>
-              <i class="el-icon-bell diy-error" v-if="scope.row.IsAlarm"></i>
-            </span>
-          </template>
-        </el-table-column>
-        <el-table-column
           prop="LastAlarmName"
           label="报警信息">
+          <template slot-scope="scope">
+            <span>
+              <span :class="scope.row.IsAlarm ? 'error-color' : ''">{{scope.row.LastAlarmName}}</span>
+            </span>
+          </template>
         </el-table-column>
         <el-table-column
           prop="IsActivity"

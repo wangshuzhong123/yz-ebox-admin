@@ -69,9 +69,8 @@
             this.loginLoading = false
             this.$message.error(error)
           })
-        }).catch(error => {
+        }).catch(() => {
           this.loginLoading = false
-          this.$message.error(error)
         })
       }
     }
