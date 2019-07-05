@@ -8,7 +8,7 @@ const zcConfig = {
   onlineIp: '',
   onlinePort: '',
   onlinePath: '',
-  isOnline: true // false为本地环境，true为线上环境
+  isOnline: false // false为本地环境，true为线上环境
 }
 
 export default zcConfig

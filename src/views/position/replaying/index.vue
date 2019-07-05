@@ -67,6 +67,7 @@
   import BMapLib from '@/utils/MakerClusterer'
   import BMAPNORMALMAP from 'BMAP_NORMAL_MAP'
   import BMAPHYBRIDMAP from 'BMAP_HYBRID_MAP'
+  import CarImg from '@/assets/img/car.png'
   export default {
     name: 'Replaying',
     mounted() {
@@ -240,9 +241,9 @@
         var self = this
         self.carMap.addOverlay(new BMap.Polyline(self.roadMarkerData, { strokeColor: 'green', strokeWeight: 5, strokeOpacity: 1 })) // 画路径
         self.carMap.setViewport(self.roadMarkerData) // 最佳视野
-        self.carMarker = new BMap.Marker(self.roadMarkerData[0], { icon: new BMap.Icon('http://developer.baidu.com/map/jsdemo/img/car.png', new BMap.Size(52, 26), { anchor: new BMap.Size(27, 13) }) })
+        self.carMarker = new BMap.Marker(self.roadMarkerData[0], { icon: new BMap.Icon(CarImg, new BMap.Size(55, 21), { anchor: new BMap.Size(27, 13) }) })
         // 小车信息
-        var label = new BMap.Label(self.LicenseNum, { offset: new BMap.Size(0, -30) })
+        var label = new BMap.Label(self.LicenseNum, { offset: new BMap.Size(0, -35) })
         label.setStyle({ border: '1px solid rgb(204, 204, 204)', color: 'rgb(0, 0, 0)', borderRadius: '5px', padding: '5px', background: 'rgb(255, 255, 255)' })
         self.carMarker.setLabel(label) // 车标样式
         self.carMap.addOverlay(self.carMarker) // 把车标记加入地图
@@ -254,11 +255,11 @@
         self.roadLuShu = new BMapLib.LuShu(self.carMap, self.roadMarkerData, {
           defaultContent: self.LicenseNum,
           autoView: true, // 是否开启自动视野调整，如果开启那么路书在运动过程中会根据视野自动调整
-          icon: new BMap.Icon('http://developer.baidu.com/map/jsdemo/img/car.png', new BMap.Size(52, 26), { anchor: new BMap.Size(27, 13) }),
+          icon: new BMap.Icon(CarImg, new BMap.Size(55, 21), { anchor: new BMap.Size(27, 13) }),
           speed: self.speed,
           enableRotation: true, // 是否设置marker随着道路的走向进行旋转
           landmarkPois: [
-            { lng: 116.306954, lat: 40.05718, html: '加油站', pauseTime: 2 }
+            // { lng: 116.306954, lat: 40.05718, html: '加油站', pauseTime: 2 }
           ]
         })
       },

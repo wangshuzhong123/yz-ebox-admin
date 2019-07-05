@@ -97,6 +97,8 @@
   import BMapLib from '@/utils/MakerClusterer'
   import BMAPNORMALMAP from 'BMAP_NORMAL_MAP'
   import BMAPHYBRIDMAP from 'BMAP_HYBRID_MAP'
+  import CarImg from '@/assets/img/car.png'
+  import CarIcon from '@/assets/img/car-icon.png'
   import { setTimeout } from 'timers'
   export default {
     name: 'LocationService',
@@ -316,7 +318,8 @@
             var turnBadiDu = MapabcEncryptToBdmap(monitorData.Lon, monitorData.Lat)
             var newPointer = new BMap.Point(turnBadiDu.lon, turnBadiDu.lat)
             var marker = null
-            marker = new BMap.Marker(newPointer)
+            var carIcon = new BMap.Icon(CarIcon, new BMap.Size(21, 55))
+            marker = new BMap.Marker(newPointer, { icon: carIcon })
             marker.data = monitorData
             // 标注标签
             var labelOption = {
@@ -442,7 +445,7 @@
         var self = this
         self.roadMap.addOverlay(new BMap.Polyline(self.roadMarkerData, { strokeColor: 'green', strokeWeight: 5, strokeOpacity: 1 })) // 画路径
         self.roadMap.setViewport(self.roadMarkerData) // 最佳视野
-        self.carMarker = new BMap.Marker(self.roadMarkerData[0], { icon: new BMap.Icon('http://developer.baidu.com/map/jsdemo/img/car.png', new BMap.Size(52, 26), { anchor: new BMap.Size(27, 13) }) })
+        self.carMarker = new BMap.Marker(self.roadMarkerData[0], { icon: new BMap.Icon(CarImg, new BMap.Size(55, 21), { anchor: new BMap.Size(27, 13) }) })
         // 小车信息
         var label = new BMap.Label(self.carRoadNum, { offset: new BMap.Size(0, -30) })
         label.setStyle({ border: '1px solid rgb(204, 204, 204)', color: 'rgb(0, 0, 0)', borderRadius: '5px', padding: '5px', background: 'rgb(255, 255, 255)' })
@@ -456,7 +459,7 @@
         self.roadLuShu = new BMapLib.LuShu(self.roadMap, self.roadMarkerData, {
           defaultContent: self.carRoadNum,
           autoView: true, // 是否开启自动视野调整，如果开启那么路书在运动过程中会根据视野自动调整
-          icon: new BMap.Icon('http://developer.baidu.com/map/jsdemo/img/car.png', new BMap.Size(52, 26), { anchor: new BMap.Size(27, 13) }),
+          icon: new BMap.Icon(CarImg, new BMap.Size(55, 21), { anchor: new BMap.Size(27, 13) }),
           speed: self.speed,
           enableRotation: true, // 是否设置marker随着道路的走向进行旋转
           landmarkPois: [

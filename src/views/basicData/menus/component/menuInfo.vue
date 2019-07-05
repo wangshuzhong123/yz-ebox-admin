@@ -152,7 +152,7 @@
                 self.$message.success(res.message)
                 setTimeout(function() {
                   self.eventTab('refresh', 'first', 'menu')
-                }, 2000)
+                }, 500)
               } else {
                 self.$message.error(res.message)
               }
@@ -187,7 +187,7 @@
                 self.$message.success(res.message)
                 setTimeout(function() {
                   self.eventTab('update', 'first', 'menu')
-                }, 2000)
+                }, 500)
               } else {
                 self.$message.error(res.message)
               }

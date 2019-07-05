@@ -89,6 +89,8 @@
     },
     watch: {
       value: function(newValue, oldValue) {
+        console.log(newValue)
+        console.log(oldValue)
         var nowDate = new Date().getTime()
         var time = (newValue + '' || '').split('~')
         this.type = time[0] ? time[0] : 1

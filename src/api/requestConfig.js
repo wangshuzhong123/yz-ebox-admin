@@ -293,6 +293,102 @@ export async function GetLocationMap(dataInfo) {
     data: inputView(dataInfo)
   })
 }
+// 日志列表
+export async function GetLogPageList(dataInfo) {
+  return request({
+    url: zcApi + '/platform/log/getpagerlist',
+    method: 'post',
+    data: inputView(dataInfo)
+  })
+}
+// 日志详情
+export async function GetLogInfo(dataInfo) {
+  return request({
+    url: zcApi + '/platform/log/getsingle',
+    method: 'post',
+    data: inputView(dataInfo)
+  })
+}
+// 删除日志
+export async function DeleteLog(dataInfo) {
+  return request({
+    url: zcApi + '/platform/log/delete',
+    method: 'post',
+    data: inputView(dataInfo)
+  })
+}
+// 组织架构树形列表
+export async function GetDivisionalTree(dataInfo) {
+  return request({
+    url: zcApi + '/ebox/platform/deptInfo/GetTreeList',
+    method: 'post',
+    data: inputView(dataInfo)
+  })
+}
+// 单条详情
+export async function GetDivisionalSingle(dataInfo) {
+  return request({
+    url: zcApi + '/ebox/platform/deptInfo/getsingle',
+    method: 'post',
+    data: inputView(dataInfo)
+  })
+}
+// 组织机构编辑
+export async function UpdateDivisional(dataInfo) {
+  return request({
+    url: zcApi + '/ebox/platform/deptInfo/update',
+    method: 'post',
+    data: inputView(dataInfo)
+  })
+}
+// 组织机构新增
+export async function AddDivisional(dataInfo) {
+  return request({
+    url: zcApi + '/ebox/platform/deptInfo/insert',
+    method: 'post',
+    data: inputView(dataInfo)
+  })
+}
+// 组织架构删除
+export async function DeleteDivisional(dataInfo) {
+  return request({
+    url: zcApi + '/ebox/platform/deptInfo/delete',
+    method: 'post',
+    data: inputView(dataInfo)
+  })
+}
+// 组织架构排序
+export async function GetDivisionalSort(dataInfo) {
+  return request({
+    url: zcApi + '/ebox/platform/deptInfo/GetOrderList',
+    method: 'post',
+    data: inputView(dataInfo)
+  })
+}
+// 组织架构保存排序
+export async function UpdateDivisionalSort(dataInfo) {
+  return request({
+    url: zcApi + '/ebox/platform/deptInfo/updateorder',
+    method: 'post',
+    data: inputView(dataInfo)
+  })
+}
+// 根据部门下的车辆
+export async function GetDivisionalCarList(dataInfo) {
+  return request({
+    url: zcApi + '/ebox/platform/deptMapInfo/getlist',
+    method: 'post',
+    data: inputView(dataInfo)
+  })
+}
+// 部门与车辆绑定
+export async function UpdateDivisionalCar(dataInfo) {
+  return request({
+    url: zcApi + '/ebox/platform/deptMapInfo/save',
+    method: 'post',
+    data: inputView(dataInfo)
+  })
+}
 // 1
 // 1
 // 1

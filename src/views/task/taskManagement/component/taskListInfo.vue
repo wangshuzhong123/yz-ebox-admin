@@ -223,7 +223,7 @@
                 self.$message.success(res.message)
                 setTimeout(function() {
                   self.eventTab('refresh', 'first', 'taskList')
-                }, 2000)
+                }, 500)
               } else {
                 self.$message.error(res.message)
               }
@@ -269,7 +269,7 @@
                 self.$message.success(res.message)
                 setTimeout(function() {
                   self.eventTab('update', 'first', 'taskList')
-                }, 2000)
+                }, 500)
               } else {
                 self.$message.error(res.message)
               }

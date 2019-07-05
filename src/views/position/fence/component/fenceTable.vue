@@ -25,9 +25,9 @@
         <el-button type="primary" @click.native="searchTable">搜索</el-button>
       </div>
     </div>
-    <!-- <div class="zc-table-event-btn">
-      <el-button type="primary" @click.native="eventTab('新增车辆', 'second')">新增车辆</el-button>
-    </div> -->
+    <div class="zc-table-event-btn">
+      <el-button type="primary">新增围栏</el-button>
+    </div>
     <div class="zc-table-body">
       <el-table
         ref="carTable"
@@ -35,12 +35,7 @@
         :empty-text="emptyText"
         v-loading="tableLoading"
         border
-        @selection-change="handleSelectionChange"
         style="width: 100%">
-       <el-table-column
-          type="selection"
-          width="55">
-        </el-table-column>
         <el-table-column
           prop="LicenseNum"
           label="车牌号">
@@ -119,9 +114,9 @@
 
 <script>
   import { mapGetters } from 'vuex'
-  import { GetCarList, GetSupplierList, UpdateCarActivity } from '@/api/requestConfig'
+  import { GetCarList, GetSupplierList } from '@/api/requestConfig'
   export default {
-    name: 'CarListTable',
+    name: 'FenceTable',
     created() {
       // 获取供应商下拉
       GetSupplierList({ PageIndex: 0 }).then(res => {
@@ -141,9 +136,9 @@
     },
     watch: {
       'commonTabInfo.text': function(val, oldVal) {
-        if (val === 'refresh' && this.commonTabInfo.custom === 'carList') {
+        if (val === 'refresh' && this.commonTabInfo.custom === 'fence') {
           this.clearSearch()
-        } else if (val === 'update' && this.commonTabInfo.custom === 'carList') {
+        } else if (val === 'update' && this.commonTabInfo.custom === 'fence') {
           this.searchTable()
         }
       }
@@ -211,23 +206,6 @@
           }
           this.tableLoading = false
         })
-      },
-      // 是否启用
-      changeIsActivity(e, rowId) {
-        var needData = {}
-        needData.Id = rowId
-        needData.IsActivity = e
-        UpdateCarActivity(needData).then(res => {
-          if (needData.IsActivity) {
-            this.$message.success('已启用')
-          } else {
-            this.$message.success('已禁用')
-          }
-        })
-      },
-      // 表格复选框
-      handleSelectionChange(val) {
-        this.selectCarList = val
       }
     }
   }

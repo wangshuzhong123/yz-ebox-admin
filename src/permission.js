@@ -86,9 +86,15 @@ function addRouterByRole(roleMenuData) {
       // 第二层
       for (var j = 0; j < listTwo.length; j++) {
         var routerTwo = {}
-        routerTwo.path = RouterList[listTwo[j].LinkUrl] ? RouterList[listTwo[j].LinkUrl].path : RouterList.empty.path
+        // 判断二级菜单是否有对应的路由容器
+        if (!RouterList[listTwo[j].LinkUrl] && listTwo[j].children && listTwo[j].children.length > 0) {
+          routerTwo.path = '/' + roleMenu[i].LinkUrl + RouterList.emptySec.path
+          routerTwo.component = RouterList.emptySec.component
+        } else {
+          routerTwo.path = RouterList[listTwo[j].LinkUrl] ? RouterList[listTwo[j].LinkUrl].path : RouterList.empty.path
+          routerTwo.component = RouterList[listTwo[j].LinkUrl] ? RouterList[listTwo[j].LinkUrl].component : RouterList.empty.component
+        }
         routerTwo.name = listTwo[j].Title
-        routerTwo.component = RouterList[listTwo[j].LinkUrl] ? RouterList[listTwo[j].LinkUrl].component : RouterList.empty.component
         routerTwo.selfId = listTwo[j].Id
         routerTwo.parentId = listTwo[j].ParentId
         routerTwo.meta = {
@@ -100,7 +106,12 @@ function addRouterByRole(roleMenuData) {
           if (RouterList[listThree[0].LinkUrl]) {
             routerTwo.redirect = RouterList[listTwo[j].LinkUrl].path + '/' + RouterList[listThree[0].LinkUrl].path
           } else {
-            routerObj.redirect = RouterList[listTwo[j].LinkUrl].path + '/' + RouterList.empty.path
+            // 二级路由容器为空，指向默认空页面
+            if (RouterList[listTwo[j].LinkUrl]) {
+              routerObj.redirect = RouterList[listTwo[j].LinkUrl].path + '/' + RouterList.empty.path
+            } else {
+              routerObj.redirect = routerTwo.path + '/' + RouterList.empty.path
+            }
           }
           routerTwo.children = []
           // 第三层

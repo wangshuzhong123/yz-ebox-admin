@@ -1,28 +1,28 @@
 <template>
   <div class="event-info">
-    <!-- 菜单排序 -->
+    <!-- 部门排序 -->
     <div class="event-content">
         <template v-for="(item, index) in sortData">
             <div class="event-cont">
-                <span class="cont-title"><i class="cont-must-tip">*</i>{{item.Title}}：</span>
+                <span class="cont-title"><i class="cont-must-tip">*</i>{{item.Name}}：</span>
                 <div class="cont-input">
-                    <el-input v-model="sortData[index].OrderId" placeholder="请输入菜单排序号"></el-input>
+                    <el-input v-model="sortData[index].OrderId" placeholder="请输入部门排序号"></el-input>
                 </div>
             </div>
         </template>
     </div>
     <div class="cont-footer">
         <el-button @click.native="eventTab('', 'first' )">取消</el-button>
-        <el-button type="primary" @click.native="saveMenuSortEvent">保存排序</el-button>
+        <el-button type="primary" @click.native="saveDivisionalSortEvent">保存排序</el-button>
     </div>
   </div>
 </template>
 
 <script>
   import { mapGetters } from 'vuex'
-  import { GetMenuSort, UpdateMenuSort } from '@/api/requestConfig'
+  import { GetDivisionalSort, UpdateDivisionalSort } from '@/api/requestConfig'
   export default {
-    name: 'MenuSort',
+    name: 'DivisionalSort',
     data() {
       return {
         sortData: [],
@@ -35,9 +35,9 @@
       ])
     },
     created() {
-      // 获取菜单排序数据
-      if (this.commonTabInfo.text === '菜单排序') {
-        GetMenuSort(this.commonTabInfo.custom.Id).then(res => {
+      // 获取部门排序数据
+      if (this.commonTabInfo.text === '部门排序') {
+        GetDivisionalSort(this.commonTabInfo.custom.Id).then(res => {
           if (res.data) {
             this.sortData = res.data
           }
@@ -54,7 +54,7 @@
         })
       },
       // 保存排序
-      saveMenuSortEvent() {
+      saveDivisionalSortEvent() {
         if (!this.addFlag) {
           return
         }
@@ -75,7 +75,7 @@
         }
         this.addFlag = false
         var turnSelf = this
-        UpdateMenuSort(needData).then(res => {
+        UpdateDivisionalSort(needData).then(res => {
           if (res.status === 'success') {
             this.$message.success(res.message)
             var that = this

@@ -111,7 +111,7 @@
               this.$message.success(res.message)
               setTimeout(function() {
                 that.eventTab('update', 'first', 'role')
-              }, 2000)
+              }, 500)
               // 更新菜单
               getMenuInfo().then(menuRes => {
                 if (res.status === 'success') {

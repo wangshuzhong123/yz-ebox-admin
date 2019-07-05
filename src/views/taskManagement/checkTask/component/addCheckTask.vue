@@ -434,7 +434,7 @@
             var that = this
             setTimeout(function() {
               that.eventStreet(false, 'refresh', false, 'first')
-            }, 2000)
+            }, 500)
           } else {
             this.$message.error(res.message)
           }
@@ -606,7 +606,7 @@
             var that = this
             setTimeout(function() {
               that.eventStreet(false, 'update', false, 'first')
-            }, 2000)
+            }, 500)
           } else {
             this.$message.error(res.message)
           }

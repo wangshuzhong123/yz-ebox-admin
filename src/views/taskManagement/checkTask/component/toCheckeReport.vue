@@ -247,7 +247,7 @@
             var that = this
             setTimeout(function() {
               that.eventStreet(true, '查看巡检任务', true, 'third', that.commonTabInfo.custom)
-            }, 2000)
+            }, 500)
           } else {
             this.$message.error(res.message)
           }
