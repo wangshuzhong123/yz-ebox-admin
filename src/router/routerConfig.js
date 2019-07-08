@@ -38,10 +38,10 @@ const routerList = {
     component: _import('organization/divisional/index')
   },
   // 部门车辆
-  // 'divisionalCar': {
-  //   path: 'divisionalCar',
-  //   component: _import('organization/divisionalCar/index')
-  // },
+  'divisionalCar': {
+    path: 'divisionalCar',
+    component: _import('organization/divisionalCar/index')
+  },
   // 菜单管理
   'menus': {
     path: 'menus',

@@ -11,17 +11,17 @@
       <div class="treeWrap-body">
         <div class="search-car-div">
           <el-input
-            placeholder="输入车牌号进行搜索"
+            placeholder="输入部门名称进行搜索"
             v-model="Name">
           </el-input>
         </div>
-        <div id="truckTree" class="tree-scroll-div">
+        <div class="tree-scroll-div">
           <el-tree
+            :style="{'maxHeight': maxHeight}"
             class="filter-tree"
             :data="treeData"
             :props="defaultProps"
             :empty-text="emptyText"
-            :default-expanded-keys="defaultList"
             node-key="Id"
             :filter-node-method="filterNode"
             @node-click="nodeClick"
@@ -41,27 +41,30 @@
             v-model="haveName">
           </el-input>
         </div>
-        <div id="truckTree" class="tree-scroll-div">
+        <div class="tree-scroll-div">
           <el-tree
+            :style="{'maxHeight': maxHeight}"
             class="filter-tree"
             :data="haveTreeData"
             :props="LicenseNumProps"
             :empty-text="emptyText"
-            :default-expanded-keys="defaultList"
             node-key="Id"
             show-checkbox
             :filter-node-method="filterDivisionalNode"
+            @check="haveCheckTreeChange"
             ref="haveDivisionTree">
           </el-tree>
         </div>
       </div>
     </div>
     <div class="tree-event-center">
-      <div class="tree-event-btn">
-        <el-button type="primary" @click.native="saveRelation">到左边</el-button>
-      </div>
-      <div class="tree-event-btn">
-        <el-button type="primary" @click.native="deleteRelation">到右边</el-button>
+      <div class="event-position">
+        <div class="tree-event-btn">
+          <el-button type="primary" @click.native="saveRelation" :disabled="notSelectDisabled"> 《 到左边</el-button>
+        </div>
+        <div class="tree-event-btn">
+          <el-button type="primary" @click.native="deleteRelation" :disabled="haveSelectDisabled">到右边 》 </el-button>
+        </div>
       </div>
     </div>
     <div class="treeWrap">
@@ -71,21 +74,21 @@
       <div class="treeWrap-body">
         <div class="search-car-div">
           <el-input
-            placeholder="输入部门名称进行搜索"
+            placeholder="输入车牌号进行搜索"
             v-model="notName">
           </el-input>
         </div>
         <div id="truckTree" class="tree-scroll-div">
           <el-tree
+            :style="{'maxHeight': maxHeight}"
             class="filter-tree"
             :data="notTreeData"
             :props="LicenseNumProps"
             :empty-text="emptyText"
-            :default-expanded-keys="defaultList"
             node-key="Id"
             show-checkbox
             :filter-node-method="filterDivisionalNode"
-            :render-content="renderContent"
+            @check="checkTreeChange"
             ref="notDivisionTree">
           </el-tree>
         </div>
@@ -95,9 +98,11 @@
 </template>
 <script>
   // import { MapabcEncryptToBdmap, formatTime } from '@/filters/index'
-  import { GetDivisionalTree, GetDivisionalCarList, UpdateDivisionalCar } from '@/api/requestConfig'
+  import { GetDivisionalTree, GetDivisionalCarList, UpdateDivisionalBindCar, UpdateDivisionalUntyingCar } from '@/api/requestConfig'
   export default {
     mounted() {
+      // 获取高度
+      this.maxHeight = document.getElementById('truckTree').offsetHeight + 'px'
       // 获取组织
       this.getTreeData()
       // 获取所有未分配的
@@ -105,9 +110,9 @@
     },
     data() {
       return {
+        maxHeight: '',
         mapLoading: true,
         treeData: [], // 部门组织
-        defaultList: [], // 部门组织默认展开
         defaultProps: {
           children: 'children',
           label: 'Name'
@@ -122,8 +127,10 @@
         haveTreeData: [], // 已分配树形数据
         notName: '', // 未分配树形数据搜索框
         haveName: '', // 已分配分配树形数据搜索框
+        haveSelectDisabled: true, // 到右边按钮禁用
+        notSelectDisabled: true, // 到左边按钮禁用
         LicenseNumProps: {
-          children: 'Chidern',
+          children: 'Children',
           label: 'LicenseNum'
         }
       }
@@ -145,7 +152,6 @@
         GetDivisionalTree().then(res => {
           if (res.data) {
             this.treeData = res.data // treeData
-            this.defaultList = [this.treeData[0].Id]
           }
         })
       },
@@ -157,19 +163,22 @@
       // 搜索车牌
       filterDivisionalNode(value, data) {
         if (!value) return true
-        console.log(data)
         return data.LicenseNum.indexOf(value) !== -1
       },
       // 点击部门获取对应数据
       nodeClick(data, node, $el) {
         // 获取部门下的车辆
         this.DeptId = data.Id
-        this.getCarListByDivisional(data.Id)
+        // 去除第一节点数据
+        if (data.Id !== 0) {
+          this.getCarListByDivisional(data.Id)
+        }
       },
       // 获取当前部门已经分配车辆列表
       getCarListByDivisional(Id) {
         GetDivisionalCarList(Id).then(res => {
           this.haveTreeData = res.data
+          this.haveSelectDisabled = true
         })
       },
       // 获取当前部门未分配车辆列表
@@ -177,26 +186,32 @@
         GetDivisionalCarList().then(res => {
           this.notTreeData = res.data
           this.mapLoading = false // 隐藏遮罩层
+          this.notSelectDisabled = true
         })
       },
-      // 自定义未分配叶子节点内容
-      renderContent(h, { node, data, store }) {
-        var renderHtml = ''
-        if (node.isLeaf) {
-          renderHtml = (
-            <span>{data.LicenseNum}</span>
-          )
+      // 选中分配
+      haveCheckTreeChange(node, allNode) {
+        if (allNode.checkedKeys.length > 0) {
+          this.haveSelectDisabled = false
         } else {
-          renderHtml = (
-            <span>{data.Key}</span>
-          )
+          this.haveSelectDisabled = true
         }
-        return renderHtml
+      },
+      // 选中未分配
+      checkTreeChange(node, allNode) {
+        if (allNode.checkedKeys.length > 0) {
+          this.notSelectDisabled = false
+        } else {
+          this.notSelectDisabled = true
+        }
       },
       // 绑定关系
       saveRelation() {
         var selectData = this.$refs.notDivisionTree.getCheckedNodes(true, false)
-        console.log(selectData)
+        if (this.DeptId === '') {
+          this.$message.error('请选择选择部门')
+          return
+        }
         if (selectData.length < 1) {
           this.$message.error('请选择未分配车辆再进行操作')
           return
@@ -210,15 +225,29 @@
           needObj.DeptId = this.DeptId
           needArr.push(needObj)
         })
-        UpdateDivisionalCar(needArr).then(res => {
+        UpdateDivisionalBindCar(needArr).then(res => {
           if (res.status === 'success') {
+            this.$message.success('绑定成功')
             this.getCarListByDivisional(this.DeptId)
             this.getAllCarListNot()
           }
         })
       },
       // 解除关系
-      deleteRelation() {}
+      deleteRelation() {
+        var selectData = this.$refs.haveDivisionTree.getCheckedKeys()
+        if (selectData.length < 1) {
+          this.$message.error('请选择需要解绑车辆再进行操作')
+          return
+        }
+        UpdateDivisionalUntyingCar(selectData).then(res => {
+          if (res.status === 'success') {
+            this.$message.success('解除绑定成功')
+            this.getCarListByDivisional(this.DeptId)
+            this.getAllCarListNot()
+          }
+        })
+      }
     }
   }
 </script>
@@ -233,22 +262,14 @@
     position: relative;
     display: flex;
     flex-direction: row;
-  }
-  .tree-event-center{
-    box-sizing: border-box;
-    padding: 200px 20px;
-    .tree-event-btn{
-      width: 100px;
-      display: flex;
-      flex-direction: column;
-      margin: 20px 0;
-    }
+    justify-content: space-around;
   }
   .treeWrap-frist{
-    margin-right: 200px;
+    margin-right: 100px;
   }
   .treeWrap{
-    width: 300px;
+    width: 200px;
+    flex-grow: 1;
     border: 1px solid #EBEEF5;
     box-sizing: border-box;
     border-radius: 4px;
@@ -277,10 +298,34 @@
       .tree-scroll-div{
         flex-grow: 1;
         width: 100%;
-        overflow: hidden;
-        .filter-tree{
+        display: flex;
+        display: flex;
+        flex-direction: column;
+        .el-tree{
           overflow-y: auto;
         }
+      }
+    }
+  }
+  .tree-event-center{
+    flex-grow: 1;
+    box-sizing: border-box;
+    padding: 200px 20px;
+    position: relative;
+    .event-position{
+      width: 100px;
+      height: 150px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      margin: auto;
+      .tree-event-btn{
+        width: 100px;
+        display: flex;
+        flex-direction: column;
+        margin: 20px 0;
       }
     }
   }

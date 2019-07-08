@@ -382,9 +382,17 @@ export async function GetDivisionalCarList(dataInfo) {
   })
 }
 // 部门与车辆绑定
-export async function UpdateDivisionalCar(dataInfo) {
+export async function UpdateDivisionalBindCar(dataInfo) {
   return request({
-    url: zcApi + '/ebox/platform/deptMapInfo/save',
+    url: zcApi + '/ebox/platform/deptMapInfo/Bind',
+    method: 'post',
+    data: inputView(dataInfo)
+  })
+}
+// 部门与车辆解除绑定
+export async function UpdateDivisionalUntyingCar(dataInfo) {
+  return request({
+    url: zcApi + '/ebox/platform/deptMapInfo/Untying',
     method: 'post',
     data: inputView(dataInfo)
   })
