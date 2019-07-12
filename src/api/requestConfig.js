@@ -397,6 +397,38 @@ export async function UpdateDivisionalUntyingCar(dataInfo) {
     data: inputView(dataInfo)
   })
 }
+// 新增电子围栏
+export async function AddElectronic(dataInfo) {
+  return request({
+    url: zcApi + '/ebox/electronic/fence/insert',
+    method: 'post',
+    data: inputView(dataInfo)
+  })
+}
+// 编辑电子围栏
+export async function UpdateElectronic(dataInfo) {
+  return request({
+    url: zcApi + '/ebox/electronic/fence/update',
+    method: 'post',
+    data: inputView(dataInfo)
+  })
+}
+// 电子围栏分页列表
+export async function GetElectronicPageList(dataInfo) {
+  return request({
+    url: zcApi + '/ebox/electronic/fence/getpagerlist',
+    method: 'post',
+    data: inputView(dataInfo)
+  })
+}
+// 电子围栏详情
+export async function GetElectronicSingle(dataInfo) {
+  return request({
+    url: zcApi + '/ebox/electronic/fence/getsingle',
+    method: 'post',
+    data: inputView(dataInfo)
+  })
+}
 // 1
 // 1
 // 1

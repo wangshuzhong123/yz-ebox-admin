@@ -1,10 +1,12 @@
 <!--页面顶部tag快捷路由标签-->
 <template>
   <div class="tags-view-container">
-    <div class="tag-wrap" :class="{'tag-wrap-active': flagList[i]}" v-for="(todo,i) in tagslist" @click="toShowPath(todo,i)">
-      {{todo.name}}
-      <i @click.stop="toClose(i)">×</i>
-    </div>
+    <template v-for="(todo, i) in tagslist">
+      <div class="tag-wrap" :class="{'tag-wrap-active': flagList[i], 'tag-wrap-one': i === 0}"  @click="toShowPath(todo, i)">
+        {{todo.name}}
+        <i v-if="i !== 0" @click.stop="toClose(i)">×</i>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -103,6 +105,9 @@
     i:hover{
       background: #ccc;
     }
+  }
+  .tag-wrap-one{
+     padding: 0 10px 0 10px;
   }
   .tag-wrap-active{
     background: #42b983;

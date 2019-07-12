@@ -3,7 +3,9 @@
   <scroll-bar>
     <div class="login-header" v-if="sidebar.opened">
       <div class="login-header-img">
-        <img :src="headerUrl" alt="">
+        <div class="img-wrap">
+          <img :src="headerUrl" alt="">
+        </div>
       </div>
       <p class="welcome-text" :title="headerTitle">{{headerTitle}}</p>
     </div>
@@ -51,13 +53,25 @@ export default {
     .login-header-img{
       width: 100%;
       height: 80px;
-      text-align: center;
-      img{
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      .img-wrap{
+        background: #fff;
         width: 60px;
         height: 60px;
-        border: 0 none;
+        overflow: hidden;
         border-radius: 50%;
+        position: relative;
         margin-top: 18px;
+        img{
+          width: 62px;
+          height: 62px;
+          border: 0 none;
+          position: absolute;
+          top: -1px;
+          left: -1px;
+        }
       }
     }
     p{

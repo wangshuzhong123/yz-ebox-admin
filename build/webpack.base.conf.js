@@ -29,10 +29,11 @@ module.exports = {
     'BMap_Symbol_SHAPE_POINT': 'BMap_Symbol_SHAPE_POINT',
     'BMAP_ANIMATION_BOUNCE': 'BMAP_ANIMATION_BOUNCE',
     'BMAP_NORMAL_MAP': 'BMAP_NORMAL_MAP',
-    'BMAP_HYBRID_MAP': 'BMAP_HYBRID_MAP'
+    'BMAP_HYBRID_MAP': 'BMAP_HYBRID_MAP',
+    'BMAP_ANCHOR_TOP_RIGHT': 'BMAP_ANCHOR_TOP_RIGHT',
     // 'OSS': 'OSS',
     // 'T': 'T',
-    // 'BMapLib': 'BMapLib',
+    'BMapLib': 'BMapLib'
     // 'TDTPOINTSIZESMALL': 'TDT_POINT_SIZE_SMALL'
   },
   output: {

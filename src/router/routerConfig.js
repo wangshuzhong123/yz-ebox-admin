@@ -98,10 +98,10 @@ const routerList = {
     component: _import('position/replaying/index')
   },
   // 位置服务--电子围栏
-  // 'fence': {
-  //   path: 'fence',
-  //   component: _import('position/fence/index')
-  // },
+  'fence': {
+    path: 'fence',
+    component: _import('position/fence/index')
+  },
   // 空二级路由页
   'emptySec': {
     path: '/emptySec',
