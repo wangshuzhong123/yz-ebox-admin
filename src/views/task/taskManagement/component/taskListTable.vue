@@ -68,6 +68,7 @@
         </el-table-column>
         <el-table-column
           prop="LastUpdateTime"
+          width="180"
           label="最后运行时间">
            <template slot-scope="scope">
             <span :style="{color: scope.row.TimeColor}">
@@ -77,6 +78,7 @@
         </el-table-column>
         <el-table-column
           prop="IsActivity"
+          width="100"
           label="状态">
           <template slot-scope="scope">
             <span>
@@ -97,7 +99,7 @@
         </el-table-column>
         <el-table-column
           label="操作"
-          width="300">
+          width="150">
           <template slot-scope="scope">
             <el-button type="text" size="small" @click.native="eventTab('编辑作业', 'second', scope.row)">编辑</el-button>
             <el-button type="text" @click.native="runNow(scope.row.Id, $event)">运行</el-button>

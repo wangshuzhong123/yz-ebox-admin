@@ -55,6 +55,7 @@
         </el-table-column>
         <el-table-column
           prop="AddDateTime"
+          width="160"
           label="添加时间">
         </el-table-column>
          <el-table-column
@@ -63,6 +64,7 @@
         </el-table-column>
          <el-table-column
           prop="LastLoginTime"
+          width="160"
           label="上次登录时间">
         </el-table-column>
          <el-table-column
@@ -81,7 +83,7 @@
         </el-table-column>
         <el-table-column
           label="操作"
-          width="300">
+          width="150">
           <template slot-scope="scope">
             <el-button type="text" size="small" @click.native="eventTab('编辑用户', 'second', scope.row)">编辑</el-button>
             <!-- <template v-if="!scope.row.IsActivity">

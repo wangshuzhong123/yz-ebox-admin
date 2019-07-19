@@ -32,8 +32,9 @@
           label="备注">
         </el-table-column>
         <el-table-column
-            prop="AddDateTime"
-            label="日期">
+          prop="AddDateTime"
+          width="180"
+          label="日期">
         </el-table-column>
          <el-table-column
           prop="IsActivity"
@@ -47,7 +48,7 @@
         </el-table-column>
         <el-table-column
           label="操作"
-          width="300">
+          width="250">
           <template slot-scope="scope">
             <el-button type="text" size="small" @click.native="editEle(scope.row.Id)">编辑</el-button>
           </template>
@@ -81,7 +82,6 @@
           <div class="zc-table-search">
             <div class="search-quest">
               <el-button type="primary" @click.native="removeLayerInformation">清除覆盖物</el-button>
-              <!-- <el-button type="primary" @click.native="getLayerInformation">获取覆盖物</el-button> -->
             </div>
           </div>
         </div>
@@ -90,7 +90,7 @@
         </div>
       </div>
     </el-dialog>
-     <!-- 新增电子围栏 -->
+    <!-- 新增电子围栏 -->
     <el-dialog
       :title="eventDialong.title"
       custom-class="dialog-wrap" 
@@ -157,13 +157,12 @@ import { mapGetters } from 'vuex'
 import { GetElectronicPageList, AddElectronic, UpdateElectronic, GetElectronicSingle } from '@/api/requestConfig'
 import BMap from 'BMap'
 import BMapLibOut from 'BMapLib'
-import BMapLib from '@/utils/MakerClusterer'
+// import BMapLib from '@/utils/MakerClusterer'
 import { bd09togcj02, gcj02towgs84 } from '@/utils/transformLatLng'
 import BMAP_ANCHOR_TOP_RIGHT from 'BMAP_ANCHOR_TOP_RIGHT'
 export default {
   name: 'FenceTable',
   mounted() {
-    console.log(BMapLibOut)
     // 获取电子围栏表格
     this.getCarListTable()
   },
@@ -288,7 +287,6 @@ export default {
       this.roadMap.centerAndZoom('西安', 6) // 初始化地图，设置中心点坐标和地图级别
       this.roadMap.enableScrollWheelZoom(true) // 开启鼠标滚轮缩放
       // 加载完地图获取数据
-      console.log(BMapLib)
       var styleOptions = {
         strokeColor: 'red', // 边线颜色。
         fillColor: 'red', // 填充颜色。当参数为空时，圆形将没有填充效果。
@@ -315,7 +313,6 @@ export default {
     },
     // 绘制结束事件
     overlaycomplete(e) {
-      console.log(e)
       if (e.drawingMode === 'circle') {
         this.overlays.push(e.overlay)
         this.toAddEle()
@@ -330,10 +327,11 @@ export default {
       for (var i = 0; i < this.overlays.length; i++) {
         this.roadMap.removeOverlay(this.overlays[i])
       }
+      this.overlays.splice(0) // 清空
     },
     // 获取绘制覆盖物信息
     getLayerInformation() {
-      console.log(this.overlays[0].getRadius())
+      console.log(this.overlays)
       var center = this.overlays[0].point
       var cH = bd09togcj02(center.lng, center.lat)
       console.log('圆心', gcj02towgs84(cH[0], cH[1]))
@@ -354,15 +352,20 @@ export default {
         this.ruleForm.IsActivity = true
         this.ruleForm.Radius = ''
         this.ruleForm.JsonData = ''
+      } else {
+        this.ruleForm.Lat = ''
+        this.ruleForm.Lon = ''
+        this.ruleForm.Radius = ''
+        this.ruleForm.JsonData = ''
       }
-      this.getLayerInformation()
+      // this.getLayerInformation()
       this.addElePop()
       var center = this.overlays[0].point
       var cH = bd09togcj02(center.lng, center.lat) // 圆心
       var cHGPS = gcj02towgs84(cH[0], cH[1]) // 圆心
       var allDot = this.overlays[0].getPath() // 所有点
-      this.ruleForm.Lat = cHGPS[0]
-      this.ruleForm.Lon = cHGPS[1]
+      this.ruleForm.Lon = cHGPS[0]
+      this.ruleForm.Lat = cHGPS[1]
       this.ruleForm.Radius = this.overlays[0].getRadius()
       this.ruleForm.JsonData = JSON.stringify(allDot)
     },
@@ -477,6 +480,7 @@ export default {
         strokeStyle: 'solid' // 边线的样式，solid或dashed。
       }
       var polygon = new BMap.Polygon(polArry, styleOptions)
+      this.overlays.push(polygon)
       this.roadMap.addOverlay(polygon)
     }
   }

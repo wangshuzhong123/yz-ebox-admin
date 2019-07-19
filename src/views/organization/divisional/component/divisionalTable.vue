@@ -22,14 +22,16 @@
         </el-table-column>
         <el-table-column
           prop="AddDateTime"
+          width="300"
           label="添加时间">
         </el-table-column>
         <el-table-column
           label="操作"
-          width="300">
+          width="250">
           <template slot-scope="scope">
             <el-button type="text" size="small" @click.native="eventTab('部门排序', 'third', scope.row)">排序</el-button>
             <el-button type="text" size="small" @click.native="eventTab('编辑部门', 'second', scope.row)">编辑</el-button>
+            <el-button type="text" size="small" @click.native="openElePop(scope.row)">电子围栏</el-button>
             <template v-if="!scope.row.IsActivity">
               <el-button type="text" size="small" @click.native="toDeleteDivisional(scope.row.Id)">删除</el-button>
             </template>
@@ -37,12 +39,44 @@
         </el-table-column>
       </el-table>
     </div>
+    <!-- 维护电子围栏弹窗 -->
+    <el-dialog
+      :title="eventDialong.title"
+      custom-class="dialog-wrap" 
+      :visible.sync="eventDialong.eventFlag" 
+      width="500px" 
+      :close-on-click-modal="eventDialong.default" 
+      :close-on-press-escape="eventDialong.default"
+      >
+      <div class="dialog-content">
+        <div class="dialog-cont">
+          <el-form :model="ruleForm" :rules="rules" ref="EleForm" label-width="120px" label-suffix="：">
+              <el-form-item label="电子围栏名称" prop="ElecId">
+                <div class="cont-input">
+                   <el-select class="select-cont" v-model="ruleForm.ElecId" multiple placeholder="请选择">
+                    <el-option
+                      v-for="item in eleList"
+                      :key="item.Id"
+                      :label="item.Name"
+                      :value="item.Id">
+                    </el-option>
+                  </el-select>
+                </div>
+              </el-form-item>
+          </el-form>
+        </div>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="setPopFlag">取 消</el-button>
+        <el-button type="primary" @click.native="saveEle">保存</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
   import { mapGetters } from 'vuex'
-  import { GetDivisionalTree, DeleteDivisional } from '@/api/requestConfig'
+  import { GetDivisionalTree, DeleteDivisional, GetElectronicPageList, GetUnitElectronicSingle, updateUnitElectronic } from '@/api/requestConfig'
   export default {
     name: 'DivisionalTable',
     created() {
@@ -65,6 +99,7 @@
     },
     data() {
       return {
+        eleList: [], // 电子围栏列表
         menuName: '', // 部门名称
         emptyText: '未匹配到部门数据',
         divisionalTable: [],
@@ -72,7 +107,21 @@
           PageIndex: 1,
           PageSize: 10
         },
-        tableLoading: true
+        tableLoading: true,
+        eventDialong: {
+          title: '绑定电子围栏',
+          eventFlag: false, // 弹窗是否显示
+          default: false
+        },
+        ruleForm: {
+          ElecId: []
+        },
+        DeptId: '',
+        rules: {
+          ElecId: [
+            { required: true, message: '请选择电子围栏' }
+          ]
+        }
       }
     },
     methods: {
@@ -83,6 +132,21 @@
           tabsName: tabsName,
           custom: custom
         })
+      },
+      // 获取电子围栏列表
+      getEleList() {
+        // 获取电子围栏列表
+        if (this.eleList.length < 1) {
+          var needData = {}
+          needData.Param = {}
+          needData.PageIndex = 0
+          needData.SearchXml = 'platform/Car/SearchCar'
+          GetElectronicPageList(needData).then(res => {
+            if (res.data) {
+              this.eleList = res.data.list
+            }
+          })
+        }
       },
       // 清空搜索条件
       clearSearch() {
@@ -124,10 +188,53 @@
             }
           })
         }).catch(() => {})
+      },
+      openElePop(row) {
+        // 清空选中值
+        this.ruleForm.ElecId = []
+        this.getEleList() // 获取电子围栏列表
+        if (row.Id) {
+          this.DeptId = row.Id
+          GetUnitElectronicSingle(row.Id).then(res => {
+            if (res.data.length > 0) {
+              this.ruleForm.ElecId = res.data
+            }
+          })
+        }
+        this.setPopFlag()
+      },
+      // 弹窗显示
+      setPopFlag() {
+        this.eventDialong.eventFlag = !this.eventDialong.eventFlag
+      },
+      // 绑定电子围栏与组织架构
+      saveEle() {
+        // if (this.ruleForm.ElecId.length < 1) {
+        //   this.$message.error('请选择电子围栏')
+        //   return
+        // }
+        var needData = {}
+        needData.DeptId = this.DeptId
+        needData.ElecId = this.ruleForm.ElecId.toString()
+        updateUnitElectronic(needData).then(res => {
+          if (res.status === 'success') {
+            this.$message({
+              type: 'success',
+              message: '绑定成功!'
+            })
+            this.setPopFlag()
+            this.searchTable()
+          } else {
+            this.$message.error(res.message)
+          }
+        })
       }
     }
   }
 </script>
 <style rel="stylesheet/scss" lang="scss" scoped>
   @import "src/styles/zc-table-common.scss";
+  .select-cont{
+    width: 100%;
+  }
 </style>

@@ -53,7 +53,7 @@
         </el-table-column>
         <el-table-column
           label="操作"
-          width="300">
+          width="150">
           <template slot-scope="scope">
             <el-button type="text" size="small" @click.native="eventTab('菜单排序', 'third', scope.row)">排序</el-button>
             <el-button type="text" size="small" @click.native="eventTab('编辑菜单', 'second', scope.row)">编辑</el-button>

@@ -429,6 +429,22 @@ export async function GetElectronicSingle(dataInfo) {
     data: inputView(dataInfo)
   })
 }
+// 组织架构绑定电子围栏的信息
+export async function GetUnitElectronicSingle(dataInfo) {
+  return request({
+    url: zcApi + '/ebox/electronic/carmap/getsingle',
+    method: 'post',
+    data: inputView(dataInfo)
+  })
+}
+// 组织架构绑定电子围栏
+export async function updateUnitElectronic(dataInfo) {
+  return request({
+    url: zcApi + '/ebox/electronic/carmap/update',
+    method: 'post',
+    data: inputView(dataInfo)
+  })
+}
 // 1
 // 1
 // 1

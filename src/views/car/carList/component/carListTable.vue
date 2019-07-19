@@ -67,14 +67,17 @@
         </el-table-column>
         <el-table-column
           prop="LastAddress"
+          width="300"
           label="最新位置">
         </el-table-column>
         <el-table-column
           prop="LatAndLonUpdateTime"
+          width="180"
           label="最新更新时间">
         </el-table-column>
         <el-table-column
           prop="LastAlarmName"
+          width="300"
           label="报警信息">
           <template slot-scope="scope">
             <span>
@@ -84,6 +87,7 @@
         </el-table-column>
         <el-table-column
           prop="IsActivity"
+          width="100"
           label="是否启用">
           <template slot-scope="scope">
            <el-switch

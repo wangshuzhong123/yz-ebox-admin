@@ -36,6 +36,7 @@
         </el-table-column>
         <el-table-column
           prop="IsActivity"
+          width="180"
           label="状态">
           <template slot-scope="scope">
             <span>
@@ -46,7 +47,7 @@
         </el-table-column>
         <el-table-column
           label="操作"
-          width="300">
+          width="150">
           <template slot-scope="scope">
             <el-button :disabled="scope.row.Id === 1" type="text" size="small" @click.native="eventTab('角色权限', 'third', scope.row)">权限</el-button>
             <el-button :disabled="scope.row.Id === 1" type="text" size="small" @click.native="eventTab('编辑角色', 'second', scope.row)">编辑</el-button>
