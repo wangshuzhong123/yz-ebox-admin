@@ -445,6 +445,14 @@ export async function updateUnitElectronic(dataInfo) {
     data: inputView(dataInfo)
   })
 }
+// 车辆进出电子围栏记录
+export async function getCarFencingListPage(dataInfo) {
+  return request({
+    url: zcApi + '/ebox/electronic/entryexit/getpagerlist',
+    method: 'post',
+    data: inputView(dataInfo)
+  })
+}
 // 1
 // 1
 // 1

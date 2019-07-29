@@ -75,7 +75,7 @@
           background
           layout="prev, pager, next"
           :page-size="pageInfo.PageSize"
-          :current-page="pageInfo.pageNum"
+          :current-page="pageInfo.PageIndex"
           :total="supplierTable.records"
           @current-change="changePage"
         >

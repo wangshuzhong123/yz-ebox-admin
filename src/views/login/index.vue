@@ -93,19 +93,17 @@
   .login-body{
     width: 100%;
     height: 100%;
-    position: relative;
-    background: $bg;
+    background: url('../../assets/img/dfyz_bg.png') no-repeat center center;
+    background-size: cover;
     font-size: 14px;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
     .login-form{
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 0;
-      bottom: 0;
-      margin: auto;
       width: 400px;
       height: 400px;
       padding: 30px;
+      margin-right: 100px;
     }
     .login-form-title{
       width: 100%;

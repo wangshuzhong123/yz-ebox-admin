@@ -102,6 +102,11 @@ const routerList = {
     path: 'fence',
     component: _import('position/fence/index')
   },
+  // 位置服务-车辆进出电子围栏记录
+  'fencingList': {
+    path: 'fencingList',
+    component: _import('position/fencingList/index')
+  },
   // 空二级路由页
   'emptySec': {
     path: '/emptySec',
