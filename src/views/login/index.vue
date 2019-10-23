@@ -104,6 +104,7 @@
       height: 400px;
       padding: 30px;
       margin-right: 100px;
+      background: rgba(255,255,255, 0.3);
     }
     .login-form-title{
       width: 100%;

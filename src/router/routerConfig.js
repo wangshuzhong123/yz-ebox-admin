@@ -72,6 +72,11 @@ const routerList = {
     path: '/car',
     component: Layout
   },
+  // abs
+  'abs': {
+    path: '/abs',
+    component: Layout
+  },
   // 车辆列表
   'carList': {
     path: 'carList',
@@ -106,6 +111,12 @@ const routerList = {
   'fencingList': {
     path: 'fencingList',
     component: _import('position/fencingList/index')
+  },
+  // abs
+  // abs设备管理
+  'absDevice': {
+    path: 'absDevice',
+    component: _import('abs/device/index')
   },
   // 空二级路由页
   'emptySec': {

@@ -453,6 +453,55 @@ export async function getCarFencingListPage(dataInfo) {
     data: inputView(dataInfo)
   })
 }
+// abs
+// abs设备列表
+export async function GetDeviceList(dataInfo) {
+  return request({
+    url: zcApi + '/ebox/abs/deviceinfo/getpagerlist',
+    method: 'post',
+    data: inputView(dataInfo)
+  })
+}
+// abs设备列表单条详情
+export async function GetDeviceSingle(dataInfo) {
+  return request({
+    url: zcApi + '/ebox/abs/deviceinfo/getsingle',
+    method: 'post',
+    data: inputView(dataInfo)
+  })
+}
+// abs设备列表编辑
+export async function UpdateDevice(dataInfo) {
+  return request({
+    url: zcApi + '/ebox/abs/deviceinfo/update',
+    method: 'post',
+    data: inputView(dataInfo)
+  })
+}
+// abs设备列表新增
+export async function AddDevice(dataInfo) {
+  return request({
+    url: zcApi + '/ebox/abs/deviceinfo/insert',
+    method: 'post',
+    data: inputView(dataInfo)
+  })
+}
+// abs设备列表删除
+export async function DeleteDevice(dataInfo) {
+  return request({
+    url: zcApi + '/ebox/abs/deviceinfo/delete',
+    method: 'post',
+    data: inputView(dataInfo)
+  })
+}
+// 更新abs启用状态
+export async function UpdateDeviceActivity(dataInfo) {
+  return request({
+    url: zcApi + '/ebox/abs/deviceinfo/UpdateActivity',
+    method: 'post',
+    data: inputView(dataInfo)
+  })
+}
 // 1
 // 1
 // 1
@@ -1365,3 +1414,4 @@ export async function getChengxiangDeviceData(params) {
     params: params
   })
 }
+
