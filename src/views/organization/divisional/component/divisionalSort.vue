@@ -3,7 +3,7 @@
     <!-- 部门排序 -->
     <div class="event-content">
         <template v-for="(item, index) in sortData">
-            <div class="event-cont">
+            <div class="event-cont" :key="index">
                 <span class="cont-title"><i class="cont-must-tip">*</i>{{item.Name}}：</span>
                 <div class="cont-input">
                     <el-input v-model="sortData[index].OrderId" placeholder="请输入部门排序号"></el-input>

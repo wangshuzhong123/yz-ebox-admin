@@ -19,6 +19,18 @@
             </el-select>
           </div>
         </el-form-item>
+        <el-form-item label="所属组织" prop="DeptIds">
+          <div class="cont-input">
+            <el-select v-model="ruleForm.DeptIds" multiple placeholder="请选择">
+              <el-option
+                v-for="item in deptData"
+                :key="item.Id"
+                :label="item.Name"
+                :value="item.Id">
+              </el-option>
+            </el-select>
+          </div>
+        </el-form-item>
         <el-form-item label="手机" prop="Mobile">
           <div class="cont-input">
             <el-input v-model="ruleForm.Mobile" placeholder="请输入手机"></el-input>
@@ -59,7 +71,7 @@
 
 <script>
   import { mapGetters } from 'vuex'
-  import { AddUser, GetUserSingle, UpdateUser, GetRoleTable } from '@/api/requestConfig'
+  import { AddUser, GetUserSingle, UpdateUser, GetRoleTable, GetCustomerCompanyList } from '@/api/requestConfig'
   export default {
     name: 'UserInfo',
     data() {
@@ -100,10 +112,12 @@
 
       return {
         roleData: [],
+        deptData: [],
         ruleForm: {
           IsActivity: true,
           MemberName: '',
           RoleIds: [],
+          DeptIds: [],
           Mobile: '',
           Email: '',
           NickName: ''
@@ -132,13 +146,19 @@
       ])
     },
     created() {
+      // 获取组织
+      GetCustomerCompanyList({ PageIndex: 0 }).then(res => {
+        if (res.data) {
+          this.deptData = res.data.list
+        }
+      })
+      // 获取角色
       GetRoleTable().then(res => {
         if (res.data) {
           this.roleData = res.data
         } else {
           this.$message.error(res.message)
         }
-        this.tableLoading = false
       }).then(() => {
         // 编辑时获取数据
         if (this.commonTabInfo.text === '编辑用户') {
@@ -177,6 +197,7 @@
             needData.MemberName = self.ruleForm.MemberName
             needData.Email = self.ruleForm.Email
             needData.RoleIds = self.ruleForm.RoleIds
+            needData.DeptIds = self.ruleForm.DeptIds
             needData.Mobile = self.ruleForm.Mobile
             needData.NickName = self.ruleForm.NickName
             needData.IsActivity = self.ruleForm.IsActivity
@@ -213,6 +234,7 @@
             needData.MemberName = self.ruleForm.MemberName
             needData.Email = self.ruleForm.Email
             needData.RoleIds = self.ruleForm.RoleIds
+            needData.DeptIds = self.ruleForm.DeptIds
             needData.Mobile = self.ruleForm.Mobile
             needData.NickName = self.ruleForm.NickName
             needData.IsActivity = self.ruleForm.IsActivity

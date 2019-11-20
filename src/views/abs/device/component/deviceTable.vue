@@ -62,7 +62,7 @@
         </el-table-column>
         <el-table-column
           prop="Mileage"
-          label="里程">
+          label="里程(KM)">
         </el-table-column>
         <el-table-column
           prop="BrkTims"
@@ -95,6 +95,7 @@
           </template>
         </el-table-column>
         <el-table-column
+          fixed="right"
           label="操作"
           width="150">
           <template slot-scope="scope">

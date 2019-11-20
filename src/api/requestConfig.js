@@ -502,7 +502,205 @@ export async function UpdateDeviceActivity(dataInfo) {
     data: inputView(dataInfo)
   })
 }
+// 客户组织架构列表
+export async function GetCustomerCompanyList(dataInfo) {
+  return request({
+    url: zcApi + '/ebox/custdept/custdeptinfo/getpagerlist',
+    method: 'post',
+    data: inputView(dataInfo)
+  })
+}
+// 客户组织架构单条详情
+export async function GetCustomerCompanySingle(dataInfo) {
+  return request({
+    url: zcApi + '/ebox/custdept/custdeptinfo/getsingle',
+    method: 'post',
+    data: inputView(dataInfo)
+  })
+}
+// 客户组织架构编辑
+export async function UpdateCustomerCompany(dataInfo) {
+  return request({
+    url: zcApi + '/ebox/custdept/custdeptinfo/update',
+    method: 'post',
+    data: inputView(dataInfo)
+  })
+}
+// 客户组织架构新增
+export async function AddCustomerCompany(dataInfo) {
+  return request({
+    url: zcApi + '/ebox/custdept/custdeptinfo/insert',
+    method: 'post',
+    data: inputView(dataInfo)
+  })
+}
+// 客户组织架构删除
+export async function DeleteCustomerCompany(dataInfo) {
+  return request({
+    url: zcApi + '/ebox/custdept/custdeptinfo/delete',
+    method: 'post',
+    data: inputView(dataInfo)
+  })
+}
+// 客户已绑定的车辆列表
+export async function GetCustomerHaveCarList(dataInfo) {
+  return request({
+    url: zcApi + '/ebox/custdept/custdeptmapcar/getpagerlist',
+    method: 'post',
+    data: inputView(dataInfo)
+  })
+}
+// 客户未绑定的车辆列表
+export async function GetCustomerHaveNotCarList(dataInfo) {
+  return request({
+    url: zcApi + '/ebox/custdept/custdeptmapcar/getcarlist',
+    method: 'post',
+    data: inputView(dataInfo)
+  })
+}
+// 保存选中的列表
+export async function SaveCustomerCarList(dataInfo) {
+  return request({
+    url: zcApi + '/ebox/custdept/custdeptmapcar/save',
+    method: 'post',
+    data: inputView(dataInfo)
+  })
+}
 // 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1
+// 1// 1
 // 1
 // 1
 // 1

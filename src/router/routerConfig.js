@@ -118,6 +118,21 @@ const routerList = {
     path: 'absDevice',
     component: _import('abs/device/index')
   },
+  // 客户组织
+  'customer': {
+    path: '/customer',
+    component: Layout
+  },
+  // 客户组织权限
+  'customerCompany': {
+    path: 'customerCompany',
+    component: _import('customer/customerCompany/index')
+  },
+  // 客户组织车辆管理
+  'customerCar': {
+    path: 'customerCar',
+    component: _import('customer/customerCar/index')
+  },
   // 空二级路由页
   'emptySec': {
     path: '/emptySec',

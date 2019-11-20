@@ -1,4 +1,4 @@
-<!--定位服务-->
+<!--组织绑定车辆-->
 <template>
   <div class="mainWrap" v-loading="mapLoading"
     element-loading-text="拼命加载中"
@@ -6,27 +6,26 @@
     element-loading-background="rgba(50, 50, 50, 0.7)">
     <div class="treeWrap treeWrap-frist">
       <div class="treeWrap-header">
-        <span>组织架构</span>
+        <span>客户组织列表</span>
       </div>
       <div class="treeWrap-body">
-        <div class="search-car-div">
+        <!-- <div class="search-car-div">
           <el-input
             placeholder="输入部门名称进行搜索"
+            @input="filterNode"
             v-model="Name">
           </el-input>
-        </div>
+        </div> -->
         <div class="tree-scroll-div">
-          <el-tree
-            :style="{'maxHeight': maxHeight}"
-            class="filter-tree"
-            :data="treeData"
-            :props="defaultProps"
-            :empty-text="emptyText"
-            node-key="Id"
-            :filter-node-method="filterNode"
-            @node-click="nodeClick"
-            ref="divisionTree">
-          </el-tree>
+          <div class="customer-div" :style="{'maxHeight': maxHeight}">
+            <el-radio-group v-model="DeptId">
+              <template v-for="item in treeData">
+                <div class="customer-item">
+                  <el-radio :label="item.Id">{{item.Name}}</el-radio>
+                </div>
+              </template>
+            </el-radio-group>
+          </div>
         </div>
       </div>
     </div>
@@ -69,7 +68,7 @@
     </div>
     <div class="treeWrap">
       <div class="treeWrap-header">
-        <span>未分配</span>
+        <span>未分配</span><span v-if="DeptName">（{{DeptName}}）</span>
       </div>
       <div class="treeWrap-body">
         <div class="search-car-div">
@@ -98,15 +97,15 @@
 </template>
 <script>
   // import { MapabcEncryptToBdmap, formatTime } from '@/filters/index'
-  import { GetDivisionalTree, GetDivisionalCarList, UpdateDivisionalBindCar, UpdateDivisionalUntyingCar } from '@/api/requestConfig'
+  import { GetCustomerCompanyList, GetCustomerHaveCarList, GetCustomerHaveNotCarList, SaveCustomerCarList } from '@/api/requestConfig'
   export default {
     mounted() {
       // 获取高度
       this.maxHeight = document.getElementById('truckTree').offsetHeight + 'px'
-      // 获取组织
-      this.getTreeData()
+      // 获取组织列表
+      this.getCustomerTree()
       // 获取所有未分配的
-      this.getAllCarListNot()
+      // this.getAllCarListNot(0)
     },
     data() {
       return {
@@ -137,8 +136,20 @@
       }
     },
     watch: {
-      'Name': function(val, oldVal) {
-        this.$refs.divisionTree.filter(val)
+      'DeptId': function(val, oldVal) {
+        this.treeData.map(x => {
+          // 选中的组织
+          if (x.Id === val) {
+            this.DeptName = x.Name
+            this.haveSelectDisabled = true
+            this.notSelectDisabled = true
+            this.mapLoading = true // 打开遮罩层
+            // 获取组织绑定车辆列表
+            this.getCarListByDivisional(this.DeptId)
+            // 获取组织未绑定车辆列表
+            this.getAllCarListNot(this.DeptId)
+          }
+        })
       },
       'haveName': function(val, oldVal) {
         this.$refs.haveDivisionTree.filter(val)
@@ -148,79 +159,56 @@
       }
     },
     methods: {
-      // 获取下拉列表
-      getTreeData() {
-        GetDivisionalTree().then(res => {
+      // 获取组织列表
+      getCustomerTree() {
+        GetCustomerCompanyList({ PageIndex: 0 }).then(res => {
           if (res.data) {
-            this.treeData = res.data // treeData
+            this.treeData = res.data.list // treeData
+            this.mapLoading = false // 隐藏遮罩层
           }
         })
-      },
-      // 搜索组织
-      filterNode(value, data) {
-        if (!value) return true
-        return data.Name.indexOf(value) !== -1
       },
       // 搜索车牌
       filterDivisionalNode(value, data) {
         if (!value) return true
         return data.LicenseNum.indexOf(value) !== -1
       },
-      // 点击部门获取对应数据
-      nodeClick(data, node, $el) {
-        // 获取部门下的车辆
-        this.DeptId = data.Id
-        this.DeptName = data.Name
-        // 去除第一节点数据
-        if (data.Id !== 0) {
-          this.getCarListByDivisional(data.Id)
-        } else {
-          this.haveTreeData = []
-          this.haveSelectDisabled = true
-        }
-      },
       // 获取当前部门已经分配车辆列表
       getCarListByDivisional(Id) {
-        GetDivisionalCarList(Id).then(res => {
-          this.haveTreeData = res.data
-          this.haveSelectDisabled = true
+        GetCustomerHaveCarList({ Param: { DeptId: Id }, PageIndex: 0, SearchXml: 'platform/custdept/Searchcustdeptcar' }).then(res => {
+          this.haveTreeData = res.data.list
         })
       },
       // 获取当前部门未分配车辆列表
-      getAllCarListNot() {
-        GetDivisionalCarList().then(res => {
+      getAllCarListNot(customerId) {
+        GetCustomerHaveNotCarList(customerId).then(res => {
           this.notTreeData = res.data
           this.mapLoading = false // 隐藏遮罩层
-          this.notSelectDisabled = true
         })
       },
       // 选中分配
       haveCheckTreeChange(node, allNode) {
-        if (allNode.checkedKeys.length > 0) {
-          this.haveSelectDisabled = false
-        } else {
-          this.haveSelectDisabled = true
+        if (this.DeptId) {
+          if (allNode.checkedKeys.length > 0) {
+            this.haveSelectDisabled = false
+          } else {
+            this.haveSelectDisabled = true
+          }
         }
       },
       // 选中未分配
       checkTreeChange(node, allNode) {
-        if (allNode.checkedKeys.length > 0) {
-          this.notSelectDisabled = false
-        } else {
-          this.notSelectDisabled = true
+        if (this.DeptId) {
+          if (allNode.checkedKeys.length > 0) {
+            this.notSelectDisabled = false
+          } else {
+            this.notSelectDisabled = true
+          }
         }
       },
       // 绑定关系
       saveRelation() {
         var selectData = this.$refs.notDivisionTree.getCheckedNodes(true, false)
-        if (this.DeptId === '') {
-          this.$message.error('请选择选择部门')
-          return
-        }
-        if (selectData.length < 1) {
-          this.$message.error('请选择未分配车辆再进行操作')
-          return
-        }
         var needArr = []
         selectData.map(x => {
           var needObj = {}
@@ -230,26 +218,47 @@
           needObj.DeptId = this.DeptId
           needArr.push(needObj)
         })
-        UpdateDivisionalBindCar(needArr).then(res => {
+        this.haveTreeData.map(y => {
+          var needObj2 = {}
+          needObj2.CarId = y.CarId
+          needObj2.LicenseNum = y.LicenseNum
+          needObj2.VehTerminalNo = y.VehTerminalNo
+          needObj2.DeptId = this.DeptId
+          needArr.push(needObj2)
+        })
+        SaveCustomerCarList({ DeptId: this.DeptId, Child: needArr }).then(res => {
           if (res.status === 'success') {
             this.$message.success('绑定成功')
+            this.haveSelectDisabled = true
+            this.notSelectDisabled = true
+            this.mapLoading = true // 打开遮罩层
+            // 获取组织绑定车辆列表
             this.getCarListByDivisional(this.DeptId)
-            this.getAllCarListNot()
+            // 获取组织未绑定车辆列表
+            this.getAllCarListNot(this.DeptId)
           }
         })
       },
       // 解除关系
       deleteRelation() {
         var selectData = this.$refs.haveDivisionTree.getCheckedKeys()
-        if (selectData.length < 1) {
-          this.$message.error('请选择需要解绑车辆再进行操作')
-          return
+        for (var i = 0; i < selectData.length; i++) {
+          for (var j = 0; j < this.haveTreeData.length; j++) {
+            if (selectData[i] === this.haveTreeData[j].Id) {
+              this.haveTreeData.splice(j, 1)
+            }
+          }
         }
-        UpdateDivisionalUntyingCar(selectData).then(res => {
+        SaveCustomerCarList({ DeptId: this.DeptId, Child: this.haveTreeData }).then(res => {
           if (res.status === 'success') {
             this.$message.success('解除绑定成功')
+            this.haveSelectDisabled = true
+            this.notSelectDisabled = true
+            this.mapLoading = true // 打开遮罩层
+            // 获取组织绑定车辆列表
             this.getCarListByDivisional(this.DeptId)
-            this.getAllCarListNot()
+            // 获取组织未绑定车辆列表
+            this.getAllCarListNot(this.DeptId)
           }
         })
       }
@@ -306,8 +315,12 @@
         display: flex;
         display: flex;
         flex-direction: column;
-        .el-tree{
+        .el-tree, .customer-div{
           overflow-y: auto;
+        }
+        .customer-item{
+          box-sizing: border-box;
+          margin: 10px 0;
         }
       }
     }

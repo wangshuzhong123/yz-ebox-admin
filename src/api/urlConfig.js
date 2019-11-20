@@ -5,10 +5,10 @@ const zcConfig = {
   localPort: ':8088',
   localPath: '',
   // 线上地址
-  onlineIp: '',
+  onlineIp: 'http://yun.ostation.cn',
   onlinePort: '',
   onlinePath: '',
-  isOnline: true // false为本地环境，true为线上环境
+  isOnline: false // false为本地环境，true为线上环境
 }
 
 export default zcConfig
