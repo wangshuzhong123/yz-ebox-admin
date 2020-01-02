@@ -64,6 +64,14 @@
           prop="Mileage"
           label="里程(KM)">
         </el-table-column>
+        <!-- <el-table-column
+          prop="livolt"
+          label="电池电量">
+        </el-table-column> -->
+        <!-- <el-table-column
+          prop="Speed"
+          label="速度(km/h)">
+        </el-table-column> -->
         <el-table-column
           prop="BrkTims"
           label="制动次数">
@@ -100,6 +108,7 @@
           width="150">
           <template slot-scope="scope">
             <span>
+              <el-button type="text" size="small" @click.native="viewDetail(scope.row)">查看详情</el-button>
               <el-button type="text" size="small" @click.native="eventTab('编辑设备', 'second', scope.row)">编辑</el-button>
               <template v-if="!scope.row.IsActivity">
                 <el-button type="text" size="small" @click.native="DeleteDeviceId(scope.row.Id)">删除</el-button>
@@ -121,17 +130,146 @@
       </div>
     </div>
     <div id="myMap"></div>
+    <!-- 详情 -->
+    <el-dialog
+      ref="detail"
+      :title="dialogInfo.title"
+      custom-class="dialog-wrap" 
+      :visible.sync="dialogInfo.showFlag" 
+      width="900px" 
+      top="15vh" 
+      :close-on-click-modal="dialogInfo.default" 
+      :close-on-press-escape="dialogInfo.default"
+      >
+      <div class="dialog-content" v-if="detailData.LicenseNum">
+        <el-row>
+          <el-col :span="11">
+            <el-row>
+               <el-col :span="8"><div class="detail-title">车牌号：</div></el-col>
+               <el-col :span="16"><div class="detail-cont">{{detailData.LicenseNum}}</div></el-col>
+            </el-row>
+          </el-col>
+          <el-col :span="11">
+           <el-row>
+               <el-col :span="8"><div class="detail-title">设备号：</div></el-col>
+               <el-col :span="16"><div class="detail-cont">{{detailData.DeviceNo}}</div></el-col>
+            </el-row>
+          </el-col>
+          <el-col :span="11">
+            <el-row>
+               <el-col :span="8"><div class="detail-title">供应商：</div></el-col>
+               <el-col :span="16"><div class="detail-cont">威伯科</div></el-col>
+            </el-row>
+          </el-col>
+          <el-col :span="11">
+           <el-row>
+               <el-col :span="8"><div class="detail-title">ABS版本：</div></el-col>
+               <el-col :span="16"><div class="detail-cont">{{detailData.ABSInfo}}</div></el-col>
+            </el-row>
+          </el-col>
+          <el-col :span="11">
+            <el-row>
+               <el-col :span="8"><div class="detail-title">经度：</div></el-col>
+               <el-col :span="16"><div class="detail-cont">{{detailData.Lat}}</div></el-col>
+            </el-row>
+          </el-col>
+          <el-col :span="11">
+           <el-row>
+               <el-col :span="8"><div class="detail-title">纬度：</div></el-col>
+               <el-col :span="16"><div class="detail-cont">{{detailData.lon}}</div></el-col>
+            </el-row>
+          </el-col>
+          <el-col :span="11">
+            <el-row>
+               <el-col :span="8"><div class="detail-title">里程（km）：</div></el-col>
+               <el-col :span="16"><div class="detail-cont">{{detailData.Mileage}}</div></el-col>
+            </el-row>
+          </el-col>
+          <el-col :span="11">
+           <el-row>
+               <el-col :span="8"><div class="detail-title">速度（km/h）：</div></el-col>
+               <el-col :span="16"><div class="detail-cont">{{detailData.Speed}}</div></el-col>
+            </el-row>
+          </el-col>
+          <el-col :span="11">
+           <el-row>
+               <el-col :span="8"><div class="detail-title">电量：</div></el-col>
+               <el-col :span="16"><div class="detail-cont">{{detailData.livolt}}</div></el-col>
+            </el-row>
+          </el-col>
+          <el-col :span="11">
+            <el-row>
+               <el-col :span="8"><div class="detail-title">位置：</div></el-col>
+               <el-col :span="16"><div class="detail-cont">{{detailData.baiduAddress}}</div></el-col>
+            </el-row>
+          </el-col>
+          <el-col :span="11">
+            <el-row>
+               <el-col :span="8"><div class="detail-title">制动次数：</div></el-col>
+               <el-col :span="16"><div class="detail-cont">{{detailData.BrkTims}}</div></el-col>
+            </el-row>
+          </el-col>
+          <el-col :span="11">
+           <el-row>
+               <el-col :span="8"><div class="detail-title">运行次数：</div></el-col>
+               <el-col :span="16"><div class="detail-cont">{{detailData.RunningTims}}</div></el-col>
+            </el-row>
+          </el-col>
+          <el-col :span="11">
+            <el-row>
+               <el-col :span="8"><div class="detail-title">ABS激活次数：</div></el-col>
+               <el-col :span="16"><div class="detail-cont">{{detailData.AbsBrkTims}}</div></el-col>
+            </el-row>
+          </el-col>
+          <el-col :span="11">
+           <el-row>
+               <el-col :span="8"><div class="detail-title">更新时间：</div></el-col>
+               <el-col :span="16"><div class="detail-cont">{{detailData.UpdateTime}}</div></el-col>
+            </el-row>
+          </el-col>
+        </el-row>
+        <div class="car-bg-wrap">
+          <div class="car-bg-left flexCol">
+            <div class="car-info-cont">
+              <div class="car-info-item"><span>左前轮车速(km/h)：</span><span class="car-info-font">{{detailData.whlSpdYE1}}</span></div>
+              <div class="car-info-item"><span>左前轮传感器最小电压(mV)：</span><span class="car-info-font">{{detailData.snsrVoltMinYE1}}</span></div>
+              <div class="car-info-item"><span>左前轮传感器最大电压(mV)：</span><span class="car-info-font">{{detailData.snsrVoltMaxYE1}}</span></div>
+            </div>
+            <div class="car-info-cont">
+              <div class="car-info-item"><span>左后轮车速(km/h)：</span><span class="car-info-font">{{detailData.whlSpdYE2}}</span></div>
+              <div class="car-info-item"><span>左后轮传感器最小电压(mV)：</span><span class="car-info-font">{{detailData.snsrVoltMinYE2}}</span></div>
+              <div class="car-info-item"><span>左后轮传感器最大电压(mV)：</span><span class="car-info-font">{{detailData.snsrVoltMaxYE2}}</span></div>
+            </div>
+          </div>
+          <div class="car-bg-center"><img :src="CarBg" alt=""></div>
+          <div class="car-bg-right flexCol">
+            <div class="car-info-cont">
+              <div class="car-info-item"><span>右前轮车速(km/h)：</span><span class="car-info-font">{{detailData.whlSpdBU1}}</span></div>
+              <div class="car-info-item"><span>右前轮传感器最小电压(mV)：</span><span class="car-info-font">{{detailData.snsrVoltMinBU1}}</span></div>
+              <div class="car-info-item"><span>右前轮传感器最大电压(mV)：</span><span class="car-info-font">{{detailData.snsrVoltMaxBU1}}</span></div>
+            </div>
+            <div class="car-info-cont">
+              <div class="car-info-item"><span>右后轮车速(km/h)：</span><span class="car-info-font">{{detailData.whlSpdBU2}}</span></div>
+              <div class="car-info-item"><span>右后轮传感器最小电压(mV)：</span><span class="car-info-font">{{detailData.snsrVoltMinBU2}}</span></div>
+              <div class="car-info-item"><span>右后轮传感器最大电压(mV)：</span><span class="car-info-font">{{detailData.snsrVoltMaxBU2}}</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
   import { mapGetters } from 'vuex'
-  import { GetDeviceList, UpdateDeviceActivity, DeleteDevice } from '@/api/requestConfig'
+  import { GetDeviceList, UpdateDeviceActivity, DeleteDevice, GetDeviceSingle } from '@/api/requestConfig'
   import { MapabcEncryptToBdmap } from '@/filters/index'
+  import CarBg from '@/assets/img/car-bg.png'
   import BMap from 'BMap'
   export default {
     name: 'deviceTable',
     mounted() {
+      console.log(this.CarBg)
       // 获取车辆表格
       this.getDeviceTable()
       this.renderMap()
@@ -154,6 +292,7 @@
       return {
         carMap: null,
         emptyText: '未匹配到设备数据',
+        CarBg: CarBg,
         LicenseNum: '', // 车牌号
         DeviceNo: '', // 设备号
         deviceTable: { list: [] },
@@ -161,6 +300,12 @@
           SearchXml: 'platform/abs/SearchCar',
           PageIndex: 1,
           PageSize: 10
+        },
+        detailData: {},
+        dialogInfo: {
+          title: '详情',
+          showFlag: false, // 弹窗是否显示
+          default: false
         },
         tableLoading: true
       }
@@ -286,10 +431,55 @@
         this.deviceTable.list.map((x, index) => {
           this.turnAdress(x.Lat, x.lon, index)
         })
+      },
+      // 查看详情
+      viewDetail(row) {
+        GetDeviceSingle(row.Id).then(res => {
+          if (res.data) {
+            const resData = res.data
+            this.detailData = resData
+            this.detailData.baiduAddress = row.baiduAddress || ''
+            this.showPop()
+          }
+        })
+      },
+      // 弹窗显示隐藏
+      showPop() {
+        this.dialogInfo.showFlag = !this.dialogInfo.showFlag
       }
     }
   }
 </script>
 <style rel="stylesheet/scss" lang="scss" scoped>
   @import "src/styles/zc-table-common.scss";
+  .detail-title, .detail-cont{
+    height: 40px;
+    line-height: 40px;
+  }
+  .flexCol{
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+  }
+  .car-bg-wrap{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+  }
+  .car-bg-left, .car-bg-right{
+    height: 300px;
+    justify-content: space-between;
+  }
+  .car-info-item{
+    height: 35px;
+    line-height: 35px;
+  }
+  .car-info-font{
+    font-weight: bolder;
+  }
+  .car-bg-center img{
+    width: 400px;
+  }
 </style>
