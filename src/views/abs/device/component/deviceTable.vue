@@ -41,7 +41,7 @@
           prop="ChannelName"
           label="供应商">
            <template slot-scope="scope">
-            <span>威伯科</span>
+            <span>WBK</span>
           </template>
         </el-table-column>
         <el-table-column
